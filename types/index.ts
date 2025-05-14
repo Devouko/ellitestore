@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { insertProductSchema } from "@/lib/validator";
-
+import {
+  cartItemSchema,
+  insertCartSchema,
+  insertProductSchema,
+} from '@/lib/validator';
 /**
  * Represents a product in the application.
  * Extends the base schema for inserting products with additional fields like `id`, `rating`, and `createdAt`.
@@ -11,6 +15,9 @@ export type Product = z.infer<typeof insertProductSchema> & {
   createdAt: Date;
   updatedAt: Date; // Optional: Add updatedAt if your schema includes it
 };
+
+export type Cart =z.infer<typeof insertCartSchema>
+export type CartItem =z.infer<typeof cartItemSchema>
 
 /**
  * Represents the props passed to a Next.js page component.

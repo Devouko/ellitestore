@@ -3,10 +3,13 @@
 import Image from 'next/image';
 import { APP_NAME } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation'; // Use the `next/navigation` hook for navigation
 
 const NotFoundPage = () => {
+  const router = useRouter(); // Initialize the router
+
   return (
-    <div className="flex-center flex-col justify-center items-center min-h-screen">
+    <div className="flex flex-col justify-center items-center min-h-screen">
       <Image
         src="/images/logo.svg" // Ensure the image exists in the public folder
         height={48}
@@ -21,7 +24,7 @@ const NotFoundPage = () => {
       <Button
         variant="outline"
         className="mt-4"
-        onClick={() => window.location.assign('/')} // Use this for navigation
+        onClick={() => router.push('/')} // Use the router for navigation
       >
         Back To Home
       </Button>

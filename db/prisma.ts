@@ -1,68 +1,33 @@
+
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaClient } from '@prisma/client';
 import ws from 'ws';
 
-// Validate the DATABASE_URL environment variable
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL environment variable is not set. Please ensure it is configured in your .env file.');
-}
-
-// Configure WebSocket for Neon
-if (!ws) {
-  throw new Error('WebSocket library (ws) is not available. Please install it using `npm install ws`.');
-}
-
+// Sets up WebSocket connections, which enables Neon to use WebSocket communication.
 neonConfig.webSocketConstructor = ws;
+const connectionString = `${process.env.DATABASE_URL}`;
 
-// Create a connection pool using the Neon connection string
-const connectionString = process.env.DATABASE_URL;
-const pool = new Pool({
-  connectionString,
-  connectionTimeoutMillis: 5000, // 5 seconds timeout
-});
+// Creates a new connection pool using the provided connection string, allowing multiple concurrent connections.
+const pool = new Pool({ connectionString });
 
-// Initialize the Prisma adapter with the Neon connection pool
+// Instantiates the Prisma adapter using the Neon connection pool to handle the connection between Prisma and Neon.
 const adapter = new PrismaNeon(pool);
 
-if (!adapter) {
-  throw new Error('Failed to initialize Prisma adapter.');
-}
-
-// Extend the PrismaClient to transform specific fields
+// Extends the PrismaClient with a custom result transformer to convert the price and rating fields to strings.
 export const prisma = new PrismaClient({ adapter }).$extends({
   result: {
     product: {
       price: {
         compute(product) {
-          // Ensure the price is converted to a string (if it's a number)
-          return product.price?.toString() ?? '0.00'; // Fallback to '0.00' if price is null/undefined
+          return product.price.toString();
         },
       },
       rating: {
         compute(product) {
-          // Ensure the rating is converted to a string (if it's a number)
-          return product.rating?.toString() ?? '0.0'; // Fallback to '0.0' if rating is null/undefined
+          return product.rating.toString();
         },
       },
     },
   },
-});
-
-// Optional: Add error handling for the connection pool
-pool.on('error', (err) => {
-  console.error('Unexpected error on idle client:', err.message);
-  process.exit(-1);
-});
-
-// Optional: Gracefully shut down the Prisma client and connection pool on application exit
-process.on('beforeExit', async () => {
-  try {
-    await prisma.$disconnect();
-    await pool.end();
-    console.log('Prisma client and connection pool have been gracefully shut down.');
-  } catch (error) {
-    console.error('Failed to gracefully shut down Prisma client and connection pool:', error);
-    process.exit(-1);
-  }
 });

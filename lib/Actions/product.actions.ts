@@ -1,3 +1,6 @@
+'use server';
+
+
 import {prisma} from '@/db/prisma'
 import {convertPlainObject} from '../utils'
 import { LATEST_PRODUCT_LIMIT } from "../constants";
