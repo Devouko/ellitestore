@@ -1,19 +1,21 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { getProductBySlug } from '@/lib/actions/product.actions';
+import { getProductBySlug } from '@/lib/Actions/product.actions';
 import { notFound } from 'next/navigation';
 import ProductPrice from '@/components/shared/product/product-price';
 import ProductImages from '@/components/shared/product/product-images';
 import AddToCart from '@/components/shared/product/add-to-cart';
-import { getMyCart } from '@/lib/actions/cart.actions';
-import ReviewList from './review-list';
+import { getMyCart } from '@/lib/Actions/cart.actions';
 import { auth } from '@/auth';
-import Rating from '@/components/shared/product/rating';
 
-const ProductDetailsPage = async (props: {
-  params: Promise<{ slug: string }>;
-}) => {
-  const { slug } = await props.params;
+interface PageProps {
+  params: {
+    slug: string;
+  };
+}
+
+const ProductDetailsPage = async ({ params }: PageProps) => {
+  const { slug } = params;
 
   const product = await getProductBySlug(slug);
   if (!product) notFound();
@@ -92,11 +94,6 @@ const ProductDetailsPage = async (props: {
       </section>
       <section className='mt-10'>
         <h2 className='h2-bold mb-5'>Customer Reviews</h2>
-        <ReviewList
-          userId={userId || ''}
-          productId={product.id}
-          productSlug={product.slug}
-        />
       </section>
     </>
   );
