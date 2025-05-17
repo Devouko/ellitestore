@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { insertProductSchema } from "@/lib/validator";
 import {
   cartItemSchema,
   insertCartSchema,

@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { auth } from '@/auth';
 import { formatError } from '../utils';
 import { cartItemSchema } from '../validator';
-import { prisma } from '@/db/prisma';
+import  {prisma}  from '@/db/prisma';
 import { CartItem } from '@/types';
 import { convertPlainObject } from '../utils';
 

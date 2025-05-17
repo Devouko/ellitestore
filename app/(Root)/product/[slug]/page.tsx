@@ -7,6 +7,7 @@ import ProductImages from '@/components/shared/product/product-images';
 import AddToCart from '@/components/shared/product/add-to-cart';
 import { getMyCart } from '@/lib/Actions/cart.actions';
 import { auth } from '@/auth';
+import Rating from '@/components/shared/product/product-rating'; // make sure this is imported
 
 interface PageProps {
   params: {
@@ -14,7 +15,7 @@ interface PageProps {
   };
 }
 
-const ProductDetailsPage = async ({ params }: PageProps) => {
+export default async function ProductDetailsPage({ params }: PageProps) {
   const { slug } = params;
 
   const product = await getProductBySlug(slug);
@@ -97,6 +98,4 @@ const ProductDetailsPage = async ({ params }: PageProps) => {
       </section>
     </>
   );
-};
-
-export default ProductDetailsPage;
+}
