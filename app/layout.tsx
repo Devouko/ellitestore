@@ -18,19 +18,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="en" className={inter.className} suppressHydrationWarning>
-      <body className="antialiased" suppressHydrationWarning>
+    <html lang='en' suppressHydrationWarning>
+      <body className={`${inter.className} antialiased`}>
         <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
+          attribute='class'
+          defaultTheme='light'
           enableSystem
           disableTransitionOnChange
-          // Add this to prevent hydration mismatch
-          storageKey="theme-preference"
         >
           {children}
           <Toaster />

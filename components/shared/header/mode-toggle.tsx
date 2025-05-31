@@ -3,7 +3,8 @@
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -14,22 +15,22 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 const ModeToggle = () => {
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
-  }, []); // Corrected dependency array
+  }, []);
 
   if (!mounted) {
-    return null; 
+    return null;
   }
-
+ 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          {theme === "light" ? (
+        <Button variant="ghost" className='focus-visible:ring-0 focus-visible:ring-offset-0'>
+           {theme === "light" ? (
             <SunIcon className="h-5 w-5" />
           ) : theme === "dark" ? (
             <MoonIcon className="h-5 w-5" />
@@ -38,21 +39,14 @@ const ModeToggle = () => {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
+      <DropdownMenuContent >
         <DropdownMenuLabel>Appearance</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          <MonitorIcon className="mr-2 h-4 w-4" />
-          System
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          <MoonIcon className="mr-2 h-4 w-4" />
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          <SunIcon className="mr-2 h-4 w-4" />
-          Light
-        </DropdownMenuItem>
+        <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+          <DropdownMenuRadioItem value="system">System</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="light">Light</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );

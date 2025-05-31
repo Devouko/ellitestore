@@ -1,12 +1,11 @@
 import { compareSync } from 'bcrypt-ts-edge';
-import type { NextAuthConfig } from 'next-auth';
-import NextAuth from 'next-auth';
+import NextAuth, { type NextAuthConfig } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-
-import  {prisma}  from '@/db/prisma';
+import { NextResponse } from 'next/server';
+import { prisma } from '@/db';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 
-export const config = {
+export const config: NextAuthConfig = {
   pages: {
     signIn: '/sign-in',
     error: '/sign-in',
@@ -32,6 +31,10 @@ export const config = {
           where: {
             email: credentials.email as string,
           },
+
+          
+
+          
         });
         // Check if user exists and password is correct
         if (user && user.password) {
@@ -64,7 +67,34 @@ export const config = {
       }
       return session;
     },
+    authorized({request,auth}: any){
+      //check for cart coookie
+      //check for cart cookie
+      if (!request.cookies.get('sessionCartId')) {
+        // Generate new session cart id cookie
+        const sessionCartId = crypto.randomUUID();
+
+        //clone the request headers
+        const newRequestHeaders = new Headers(request.headers);
+
+        console.log(newRequestHeaders);
+        // Create new response and add the new headers
+
+        const response = NextResponse.next({
+          request: {
+            headers: newRequestHeaders,
+          },
+        });
+        // Set newly generated sessionCartId in the response cookies
+        response.cookies.set('sessionCartId', sessionCartId);
+
+        //return the response with the sessionCartId set
+        return response;
+      } else {
+        return true;
+      }
+    },
   },
-} satisfies NextAuthConfig;
+};
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);

@@ -17,16 +17,16 @@ const AddToCart = ({ item }: { item: CartItem; }) => {
     const res = await addItemToCart(item);
 
     // Display appropriate toast message based on the result
-    if (!res.success) {
+    if (!res?.success) {
       toast({
         variant: 'destructive',
-        description: res.message,
+        description: res?.message,
       });
       return;
     }
 
     toast({
-      description: `${item.name} added to the cart`,
+      description: res?.message,
       action: (
         <ToastAction
           className='bg-primary text-white hover:bg-gray-800'
@@ -39,7 +39,7 @@ const AddToCart = ({ item }: { item: CartItem; }) => {
     });
 };
 
-  return <Button className='w-full' type='button' onClick={ handleAddToCart }>Add To Cart</Button>;
+  return <Button className='w-full' type='button' onClick={ handleAddToCart }> <Plus/> Add To Cart</Button>;
 };
 
 export default AddToCart;

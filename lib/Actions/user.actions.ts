@@ -4,7 +4,7 @@ import { signInFormSchema,signUpFormSchema } from "../validator"
 import  {signIn,signOut} from '@/auth'
 import { isRedirectError } from "next/dist/client/components/redirect-error"
 import { hashSync } from "bcrypt-ts-edge"
-import {prisma} from '@/db/prisma'
+import { prisma } from '@/db'
 import { formatError } from '../utils';
 export async function signInWithCredentials(prevState:unknown
  ,formData:FormData) {
@@ -33,30 +33,45 @@ export async function signUp(prevState:unknown,formData:FormData) {
             password:formData.get('password'),
             confirmPassword:formData.get('confirmPassword'),
         })
-const plainPassword=user.password
-user.password=hashSync(user.password,10)
+        
+        // Check if user already exists
+        const existingUser = await prisma.user.findUnique({
+            where: { email: user.email }
+        });
+        
+        if (existingUser) {
+            return {
+                success: false,
+                message: "Email already in use. Please use a different email."
+            };
+        }
 
-await prisma.user.create({
-    data:{
-        name:user.name,
-        email:user.email,
-        password:user.password,
-    },
-})
+        const plainPassword=user.password
+        user.password=hashSync(user.password,10)
 
-await signIn ('credentials',{
-    email:user.email,
-    password:plainPassword,
-})
-return {
-    success : true, message: 'user created successfully'}
+        await prisma.user.create({
+            data:{
+                name:user.name,
+                email:user.email,
+                password:user.password,
+            },
+        })
+
+        await signIn('credentials',{
+            email:user.email,
+            password:plainPassword,
+        })
+        return {
+            success: true, 
+            message: 'User created successfully'
+        }
     }catch(error){
         if(isRedirectError(error)){
             throw error
         }
         return {
             success:false,
-            message:"sign up failed"
+            message: formatError(error)
         }
     }
 }

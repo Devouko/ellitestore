@@ -1,7 +1,7 @@
 'use server';
 
 
-import {prisma} from '@/db/prisma'
+import { prisma } from '@/db'
 import {convertPlainObject} from '../utils'
 import { LATEST_PRODUCT_LIMIT } from "../constants";
 
@@ -14,7 +14,7 @@ export async function getLatestProducts(){
             createdAt:'desc'
         }
     })
-    console.log(data)
+  
     return convertPlainObject(data) 
 
 }

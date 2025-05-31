@@ -7,7 +7,7 @@ export const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhos
 export const LATEST_PRODUCT_LIMIT = Number(process.env.NEXT_PUBLIC_LATEST_PRODUCT_LIMIT) || 4;
 
 // Form default values
-export const signInDefaultValues = {
+export const signInDefaultvalues = {
   email: '',
   password: '',
 };

@@ -1,5 +1,5 @@
 import { Analytics } from '@vercel/analytics/react'
-import Header from '@/components/shared/header'
+import Header from '@/components/shared/header/index'
 import Footer from '@/components/Footer'
 
 export default function RootLayout({

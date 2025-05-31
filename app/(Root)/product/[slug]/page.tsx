@@ -7,7 +7,8 @@ import ProductImages from '@/components/shared/product/product-images';
 import AddToCart from '@/components/shared/product/add-to-cart';
 import { getMyCart } from '@/lib/Actions/cart.actions';
 import { auth } from '@/auth';
-import Rating from '@/components/shared/product/product-rating'; // make sure this is imported
+// import Rating from '@/components/shared/product/product-rating'; // make sure this is imported
+
 
 interface PageProps {
   params: {
@@ -41,7 +42,7 @@ export default async function ProductDetailsPage({ params }: PageProps) {
                 {product.brand} {product.category}
               </p>
               <h1 className='h3-bold'>{product.name}</h1>
-              <Rating value={Number(product.rating)} />
+              
               <p>{product.numReviews} reviews</p>
               <div className='flex flex-col sm:flex-row sm:items-center gap-3'>
                 <ProductPrice
@@ -76,7 +77,7 @@ export default async function ProductDetailsPage({ params }: PageProps) {
                 {product.stock > 0 && (
                   <div className='flex-center'>
                     <AddToCart
-                      cart={cart}
+                     
                       item={{
                         productId: product.id,
                         name: product.name,

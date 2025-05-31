@@ -1,41 +1,42 @@
-'use client'; // Ensure this is a client component
+import { Button } from '@/components/ui/button';
+import ModeToggle from './mode-toggle';
+import Link from 'next/link';
+import { EllipsisVertical, ShoppingCart } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import UserButton from './user-button';
 
-import { EllipsisVertical, ShoppingCart, UserIcon } from "lucide-react";
-import Link from "next/link"; // Import Link from next/link
-import ModeToggle from "./mode-toggle";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import UserButton from "./user-button";
 const Menu = () => {
   return (
-    <div className="flex justify-end gap-3">
-      {/* Desktop Navigation */}
-      <nav className="hidden md:flex w-full max-w-xs gap-1">
+    <div className='flex justify-end gap-3'>
+      <nav className='hidden md:flex w-full max-w-xs gap-1'>
         <ModeToggle />
-        <Button asChild variant="ghost">
-        <Link href="/cart">
-          
-            <ShoppingCart /> Cart 
-        </Link>
+        <Button asChild variant='ghost'>
+          <Link href='/cart'>
+            <ShoppingCart /> Cart
+          </Link>
         </Button>
-      <UserButton/>
+        <UserButton />
       </nav>
-
-      {/* Mobile Navigation */}
-      <nav className="md:hidden">
+      <nav className='md:hidden'>
         <Sheet>
-          <SheetTrigger className="align-middle">
+          <SheetTrigger className='align-middle'>
             <EllipsisVertical />
           </SheetTrigger>
-          <SheetContent className="flex flex-col items-start">
+          <SheetContent className='flex flex-col items-start'>
             <SheetTitle>Menu</SheetTitle>
             <ModeToggle />
-            <Link href="/cart">
-              <Button variant="ghost">
+            <Button asChild variant='ghost'>
+              <Link href='/cart'>
                 <ShoppingCart /> Cart
-              </Button>
-            </Link>
-            <UserButton/>
+              </Link>
+            </Button>
+            <UserButton />
             <SheetDescription></SheetDescription>
           </SheetContent>
         </Sheet>
