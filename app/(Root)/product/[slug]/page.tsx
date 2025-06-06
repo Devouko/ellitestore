@@ -6,18 +6,24 @@ import ProductPrice from '@/components/shared/product/product-price';
 import ProductImages from '@/components/shared/product/product-images';
 import AddToCart from '@/components/shared/product/add-to-cart';
 import { getMyCart } from '@/lib/Actions/cart.actions';
+//import ReviewList from './review-list';
 import { auth } from '@/auth';
-// import Rating from '@/components/shared/product/product-rating'; // make sure this is imported
+//import Rating from '@/components/shared/product/rating';
 
-
-interface PageProps {
-  params: {
-    slug: string;
-  };
-}
-
-export default async function ProductDetailsPage({ params }: PageProps) {
-  const { slug } = params;
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * Page for displaying product details.
+ *
+ * Fetches a product by slug, and then displays the product details.
+ * Also displays a list of customer reviews for the product.
+ *
+ * @param {Promise<{ slug: string }>} props.params Parameters passed to the page.
+ * @returns {JSX.Element} The rendered page.
+/*******  a1aceb70-b79c-42c4-90f8-4f1c94ae62b8  *******/
+const ProductDetailsPage = async (props: {
+  params: Promise<{ slug: string }>;
+}) => {
+  const { slug } = await props.params;
 
   const product = await getProductBySlug(slug);
   if (!product) notFound();
@@ -42,7 +48,6 @@ export default async function ProductDetailsPage({ params }: PageProps) {
                 {product.brand} {product.category}
               </p>
               <h1 className='h3-bold'>{product.name}</h1>
-              
               <p>{product.numReviews} reviews</p>
               <div className='flex flex-col sm:flex-row sm:items-center gap-3'>
                 <ProductPrice
@@ -77,7 +82,7 @@ export default async function ProductDetailsPage({ params }: PageProps) {
                 {product.stock > 0 && (
                   <div className='flex-center'>
                     <AddToCart
-                     
+                      cart={cart}
                       item={{
                         productId: product.id,
                         name: product.name,
@@ -94,9 +99,9 @@ export default async function ProductDetailsPage({ params }: PageProps) {
           </div>
         </div>
       </section>
-      <section className='mt-10'>
-        <h2 className='h2-bold mb-5'>Customer Reviews</h2>
-      </section>
+     
     </>
   );
-}
+};
+
+export default ProductDetailsPage;
