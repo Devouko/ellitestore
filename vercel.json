@@ -1,10 +1,14 @@
 {
-  
   "$schema": "https://openapi.vercel.sh/vercel.json",
-    "functions": {
-      "**/*": {
-        "runtime": "nodejs18.x",
-        "includeFiles": ["!**/node_modules/**"]
-      }
+  "version": 2,
+  "functions": {
+    "**/*": {
+      "runtime": "nodejs18.x",
+      "includeFiles": "!**/node_modules/**"
     }
-  }
+  },
+  "buildCommand": "prisma generate && prisma migrate deploy && next build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs"
+}
