@@ -44,13 +44,18 @@ const AddToCart = ({ cart, item }: { cart?: Cart, item: CartItem }) => {
   };
 
   const handleRemoveFromCart = async () => {
-    const res = await removeItemFromCart(item.productId);
+    startTransition(async () => {
+  const res = await removeItemFromCart(item.productId);
     toast({
       variant: res.success ? 'default' : 'destructive',
       description: res.message,
     });
     return;
-  };
+
+
+    })
+  }
+  
 
   // check if item exists in cart
   const existItem = cart && cart.items.find((x: any) => x.productId === item.productId);
@@ -81,12 +86,13 @@ const AddToCart = ({ cart, item }: { cart?: Cart, item: CartItem }) => {
       {existItem ? (
         <div>
           <Button type='button' variant='outline'
+          
             onClick={handleRemoveFromCart}>
-            <Minus className='w-4 h-4' />
+                {isPending ? (<Loader className='w-4 h-4 animate-spin'/>):(<Minus className='w-4 h-4' />)  }
           </Button>
           <span className="px-2">{existItem.qty}</span>
           <Button type='button' variant='outline' onClick={handleAddToCart}>
-            <Plus className='w-4 h-4' />
+            {isPending ? (<Loader className='w-4 h-4 animate-spin'/>):(<Plus className='w-4 h-4' />)  }
           </Button>
         </div>
       ) : (
@@ -96,7 +102,7 @@ const AddToCart = ({ cart, item }: { cart?: Cart, item: CartItem }) => {
           onClick={handleAddToCart}
           disabled={isLoading}
         >
-          {isLoading ? 'Adding...' : (
+          {isLoading ? (<Loader className="w-4 h-4  animate-spin"/>) : (
             <>
               <Plus className="mr-1" /> Add To Cart
             </>
@@ -106,5 +112,6 @@ const AddToCart = ({ cart, item }: { cart?: Cart, item: CartItem }) => {
     </div>
   );
 };
+
 
 export default AddToCart;

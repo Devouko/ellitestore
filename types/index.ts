@@ -1,8 +1,12 @@
-import { z } from "zod";
+import { z, ZodNullDef } from "zod";
 import {
   cartItemSchema,
   insertCartSchema,
+  insertOrderItemSchema,
+  insertOrderSchema,
   insertProductSchema,
+  shippingAddressSchema,
+  paymentResultSchema,
 } from '@/lib/validator';
 /**
  * Represents a product in the application.
@@ -17,6 +21,23 @@ export type Product = z.infer<typeof insertProductSchema> & {
 
 export type Cart =z.infer<typeof insertCartSchema>
 export type CartItem =z.infer<typeof cartItemSchema>
+export type shippingAddress =z.infer<typeof
+shippingAddressSchema>
+
+export type OrderItem=z.infer<typeof insertOrderItemSchema>
+export type Order=z.infer<typeof insertOrderSchema> & {
+  id:string;
+  createdAt:Date;
+  isPaid:Boolean
+  paidAt:Data | null
+  isDelivered:Boolean
+
+  deliveredAt :Date | null
+  orderItems:OrderItem[],
+  user:{name: string; email:string}
+
+}
+export type PaymentResult=z.infer<typeof paymentResultSchema>
 
 /**
  * Represents the props passed to a Next.js page component.

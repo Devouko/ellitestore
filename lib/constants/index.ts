@@ -26,3 +26,22 @@ export const passwordRequirements = {
   requireNumber: true,
   requireSpecialChar: true,
 };
+export const shippingAddressDefaultValues={
+  fullName:'John Doe',
+  streetAddress:'123 Main st',
+  city:'Anytown',
+  postalCode:'12345',
+  country:'Kenya'
+}
+export const PAYMENT_METHODS=process.env.PAYMENT_METHODS
+?process.env.PAYMENT_METHODS.split(','):[
+  'Paypal',
+  'Mpesa',
+  'Stripe',
+  'Cash on Delivery',
+  
+]
+
+export const PAGE_SIZE=Number (process.env.PAGE_SIZE) || 2
+
+

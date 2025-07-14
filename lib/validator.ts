@@ -1,8 +1,13 @@
 import { z } from 'zod';
 import { formatNumberWithDecimalPlaces } from './utils';
-
+import { PAYMENT_METHODS } from './constants';
 const currency = z
-  .number()
+  .union([z.string(), z.number()])
+  .transform((val) => {
+    // Convert to number if it's a string
+    const num = typeof val === 'string' ? parseFloat(val) : val;
+    return num;
+  })
   .refine(
     (val) => /^\d+(\.\d{2})?$/.test(val.toFixed(2)),
     'Price must have exactly two decimal places'
@@ -58,3 +63,55 @@ export const signUpFormSchema = z.object({
   message: 'Passwords do not match',
   path: ['confirmPassword']
 });
+export const shippingAddressSchema=z.object({
+  fullName:z.string().min(3,'Name must be at least 3 characters'),
+  streetAddress:z.string().min(3,'Street Address must be at least 3 characters'),
+  city:z.string().min(3,'City must be at least 3 characters'),
+  postalCode:z.string().min(3,'postal code must have atleast 3 characters'),
+  country:z.string().min(3,'country must have atleast 3 characters'),
+  lat:z.number().optional(),
+  lng:z.number().optional()
+})
+export const insertOrderSchema=z.object({
+  userId:z.string().min(3,'User is required'),
+  itemPrice:currency,
+  shippingPrice:currency,
+  taxPrice:currency,
+  totalPrice:currency,
+  paymentMethod:z.string().refine((data)=>PAYMENT_METHODS.includes(data),{
+    message:'Invalid payment Method',
+
+  }),
+  shippingAddress:shippingAddressSchema,
+})
+export const insertOrderItemSchema=z.object({
+  productId:z.string(),
+  slug:z.string(),
+  name:z.string(),
+  image:z.string(),
+  price:currency,
+  qty:z.number()
+
+})
+export const updateProfileSchema = z.object({
+  name:z.string().min(3,'Name must be at least 3 characters'),
+  email:z.string().min(3,'Email must be at least 3 characters').email('Invalid email'),
+})
+
+
+
+export const paymentMethodSchema=z.object({
+  type:z.string().min(1,'Payment method is required'),
+
+})
+.refine((data)=>PAYMENT_METHODS.includes(data.type),{
+  path:['type'],
+  message:'Invalid payment method'
+})
+
+export const paymentResultSchema=z.object({
+  id:z.string(),
+  status:z.string(),
+  email_address:z.string(),
+  pricePaid:z.string(),
+})
