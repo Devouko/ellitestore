@@ -43,9 +43,10 @@ const createOrder = async() => {
     if(!user.paymentMethod){
         return {
             success:false,
-            message:'No Payemnt method',
+            message:'No Payment method',
             redirectTo:'/payment-method',
         }
+    }
         const order=insertOrderSchema.parse({
             userId:user.id,
             itemPrice:cart.itemsPrice,
@@ -93,10 +94,11 @@ const createOrder = async() => {
         }
     }
 }
-        catch (error) {
+        } catch (error) {
         if(isRedirectError(error)){
-            return {success:false,message:formatError(error)}
+            throw error
         }
+        return {success:false,message:formatError(error)}
     }
 }
    export  async function getOrderById(orderId:string){
@@ -110,8 +112,6 @@ const data=await prisma.order.findFirst({
       },
 })
 return convertPlainObject(data)
-    } {
-        
     }
 
     export async function getMyOrders({
@@ -219,7 +219,7 @@ return convertPlainObject(data)
                     paymentResult,
                 }:{
                     orderId:string,
-                    paymentResult?:paymentResult
+                    paymentResult?:PaymentResult
 
                 }
             )
