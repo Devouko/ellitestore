@@ -45,11 +45,13 @@ export const config: NextAuthConfig = {
             );
             // If password is correct, return user object
             if (isMatch) {
+              // Check if user is admin
+              const isAdmin = user.email === process.env.ADMIN_EMAIL;
               return {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                role: user.role,
+                role: isAdmin ? 'admin' : user.role,
               };
             }
           }
@@ -64,8 +66,9 @@ export const config: NextAuthConfig = {
   ],
   callbacks: {
     async session ({ session, user, trigger, token }: any) {
-      // Set the user id on the session
+      // Set the user id and role on the session
       session.user.id = token.sub;
+      session.user.role = token.role;
       // If there is an update, set the name on the session
       if (trigger === 'update') {
         session.user.name = user.name;
@@ -132,6 +135,16 @@ export const config: NextAuthConfig = {
       
       // Check if user is not authenticated and on a protected path
       if (!auth && protectedPaths.some((p) => p.test(pathname))) return false;
+
+      // Check admin routes
+      if (pathname.startsWith('/admin') && auth?.user?.role !== 'admin') {
+        return false;
+      }
+      
+      // Check seller routes
+      if (pathname.startsWith('/seller') && !pathname.startsWith('/seller/sign-in') && auth?.user?.role !== 'seller') {
+        return false;
+      }
 
       // Check for cart cookie
       if (!request.cookies.get('sessionCartId')) {

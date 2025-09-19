@@ -2,12 +2,11 @@
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useTransition } from 'react';
-import { paymentMethodSchema } from '@/lib/validator';
+import { paymentMethodSchema } from '@/lib/validators';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PAYMENT_METHODS } from '@/lib/constants';
-const DEFAULT_PAYMENT_METHOD = PAYMENT_METHODS[0];
+import { DEFAULT_PAYMENT_METHOD, PAYMENT_METHODS } from '@/lib/constants';
 import {
   Form,
   FormControl,
@@ -18,16 +17,10 @@ import {
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Loader } from 'lucide-react';
-import { updateUserPaymentMethod } from '@/lib/Actions/user.actions';
-import { updateuserPaymentMethod } from '@/lib/Actions/user.actions';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { updateUserPaymentMethod } from '@/lib/actions/user.actions';
 
-/*************  ✨ Windsurf Command 🌟  *************/
-/**
- * A form to select a payment method
- *
 const PaymentMethodForm = ({
- * @returns A JSX element containing the form
- */
   preferredPaymentMethod,
 }: {
   preferredPaymentMethod: string | null;
@@ -37,13 +30,7 @@ const PaymentMethodForm = ({
 
   const form = useForm<z.infer<typeof paymentMethodSchema>>({
     resolver: zodResolver(paymentMethodSchema),
-    /**
-     * Use the zod resolver to validate the form data
-     */
     defaultValues: {
-     * Set the default values for the form
-     */
-    /**
       type: preferredPaymentMethod || DEFAULT_PAYMENT_METHOD,
     },
   });
@@ -130,6 +117,5 @@ const PaymentMethodForm = ({
     </>
   );
 };
-/*******  d840d7a4-8ba0-4d94-946b-49881024da72  *******/
 
 export default PaymentMethodForm;

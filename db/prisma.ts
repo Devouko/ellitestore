@@ -1,89 +1,100 @@
 import { PrismaClient } from '@prisma/client';
 
+// Ensure this only runs on server-side
+if (typeof window !== 'undefined') {
+  throw new Error('Prisma client should only be used on the server side');
+}
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL not set");
+}
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-const createPrismaClient = () => {
-  return new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['error'] : ['error']
+// Extends the PrismaClient with a custom result transformer to convert the price and rating fields to strings.
+export const prisma = globalForPrisma.prisma ??
+  new PrismaClient({
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
   }).$extends({
-    result: {
-      product: {
-        price: {
-          compute(product) {
-            return product.price.toString();
-          },
-        },
-        rating: {
-          compute(product) {
-            return product.rating.toString();
-          },
+  result: {
+    product: {
+      price: {
+        compute(product) {
+          return product.price.toString();
         },
       },
-      cart: {
-        itemsPrice: {
-          needs: { itemsPrice: true },
-          compute(cart) {
-            return cart.itemsPrice.toString();
-          },
-        },
-        shippingPrice: {
-          needs: { shippingPrice: true },
-          compute(cart) {
-            return cart.shippingPrice.toString();
-          },
-        },
-        taxPrice: {
-          needs: { taxPrice: true },
-          compute(cart) {
-            return cart.taxPrice.toString();
-          },
-        },
-        totalPrice: {
-          needs: { totalPrice: true },
-          compute(cart) {
-            return cart.totalPrice.toString();
-          },
-        },
-      },
-      order: {
-        itemsPrice: {
-          needs: { itemsPrice: true },
-          compute(order) {
-            return order.itemsPrice.toString();
-          },
-        },
-        shippingPrice: {
-          needs: { shippingPrice: true },
-          compute(order) {
-            return order.shippingPrice.toString();
-          },
-        },
-        taxPrice: {
-          needs: { taxPrice: true },
-          compute(order) {
-            return order.taxPrice.toString();
-          },
-        },
-        totalPrice: {
-          needs: { totalPrice: true },
-          compute(order) {
-            return order.totalPrice.toString();
-          },
-        },
-      },
-      orderItem: {
-        price: {
-          compute(orderItem) {
-            return orderItem.price.toString();
-          },
+      rating: {
+        compute(product) {
+          return product.rating.toString();
         },
       },
     },
-  });
-
-}
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+    cart: {
+      itemsPrice: {
+        needs: { itemsPrice: true },
+        compute(cart) {
+          return cart.itemsPrice.toString();
+        },
+      },
+      shippingPrice: {
+        needs: { shippingPrice: true },
+        compute(cart) {
+          return cart.shippingPrice.toString();
+        },
+      },
+      taxPrice: {
+        needs: { taxPrice: true },
+        compute(cart) {
+          return cart.taxPrice.toString();
+        },
+      },
+      totalPrice: {
+        needs: { totalPrice: true },
+        compute(cart) {
+          return cart.totalPrice.toString();
+        },
+      },
+    },
+    order: {
+      itemsPrice: {
+        needs: { itemsPrice: true },
+        compute(cart) {
+          return cart.itemsPrice.toString();
+        },
+      },
+      shippingPrice: {
+        needs: { shippingPrice: true },
+        compute(cart) {
+          return cart.shippingPrice.toString();
+        },
+      },
+      taxPrice: {
+        needs: { taxPrice: true },
+        compute(cart) {
+          return cart.taxPrice.toString();
+        },
+      },
+      totalPrice: {
+        needs: { totalPrice: true },
+        compute(cart) {
+          return cart.totalPrice.toString();
+        },
+      },
+    },
+    orderItem: {
+      price: {
+        compute(cart) {
+          return cart.price.toString();
+        },
+      },
+    },
+  },
+});
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

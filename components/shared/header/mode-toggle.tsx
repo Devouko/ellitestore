@@ -1,18 +1,16 @@
-'use client'
-
+'use client';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SunIcon, MoonIcon, MonitorIcon } from "lucide-react"; // Added MonitorIcon for system theme
-import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+} from '@/components/ui/dropdown-menu';
+import { useTheme } from 'next-themes';
+import { SunIcon, MoonIcon, SunMoon } from 'lucide-react';
 
 const ModeToggle = () => {
   const [mounted, setMounted] = useState(false);
@@ -25,28 +23,44 @@ const ModeToggle = () => {
   if (!mounted) {
     return null;
   }
- 
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className='focus-visible:ring-0 focus-visible:ring-offset-0'>
-           {theme === "light" ? (
-            <SunIcon className="h-5 w-5" />
-          ) : theme === "dark" ? (
-            <MoonIcon className="h-5 w-5" />
+        <Button
+          variant='ghost'
+          className='focus-visible:ring-0 focus-visible:ring-offset-0'
+        >
+          {theme === 'system' ? (
+            <SunMoon />
+          ) : theme === 'dark' ? (
+            <MoonIcon />
           ) : (
-            <MonitorIcon className="h-5 w-5" /> 
+            <SunIcon />
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent >
+      <DropdownMenuContent>
         <DropdownMenuLabel>Appearance</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
-          <DropdownMenuRadioItem value="system">System</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="light">Light</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
+        <DropdownMenuCheckboxItem
+          checked={theme === 'system'}
+          onClick={() => setTheme('system')}
+        >
+          System
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuCheckboxItem
+          checked={theme === 'dark'}
+          onClick={() => setTheme('dark')}
+        >
+          Dark
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuCheckboxItem
+          checked={theme === 'light'}
+          onClick={() => setTheme('light')}
+        >
+          Light
+        </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

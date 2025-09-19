@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { auth } from '@/auth';
-import { signOutUser } from '@/lib/Actions/user.actions';
+import { signOutUser } from '@/lib/actions/user.actions';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -61,6 +61,20 @@ const UserButton = async () => {
               Order History
             </Link>
           </DropdownMenuItem>
+          
+          {session?.user?.role === 'seller' ? (
+            <DropdownMenuItem>
+              <Link href='/seller/dashboard' className='w-full'>
+                Seller Dashboard
+              </Link>
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem>
+              <Link href='/apply-seller' className='w-full'>
+                Apply to be Seller
+              </Link>
+            </DropdownMenuItem>
+          )}
 
           {session?.user?.role === 'admin' && (
             <DropdownMenuItem>

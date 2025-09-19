@@ -1,66 +1,161 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { formatCurrency } from '@/lib/utils'
-import { prisma } from '@/db/prisma'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getOrderSummary } from '@/lib/actions/order.actions';
+import { getSellerApplications, getApprovedSellersCount } from '@/lib/actions/seller.actions';
+import { formatCurrency, formatDateTime, formatNumber } from '@/lib/utils';
+import { BadgeDollarSign, Barcode, CreditCard, Users, UserCheck, Store } from 'lucide-react';
+import { Metadata } from 'next';
+import Link from 'next/link';
+import Charts from './charts';
+import { requireAdmin } from '@/lib/auth-guard';
 
-export default async function AdminOverviewPage() {
-  const ordersCount = await prisma.order.count()
-  const productsCount = await prisma.product.count()
-  const usersCount = await prisma.user.count()
-  
-  const ordersPriceSum = await prisma.order.aggregate({
-    _sum: { totalPrice: true },
-    where: { isPaid: true }
-  })
+export const metadata: Metadata = {
+  title: 'Admin Dashboard',
+};
 
-  const salesData = await prisma.order.findMany({
-    where: { isPaid: true },
-    select: {
-      totalPrice: true,
-      createdAt: true
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 6
-  })
+const AdminOverviewPage = async () => {
+  await requireAdmin();
+
+  const summary = await getOrderSummary();
+  const sellerApplications = await getSellerApplications();
+  const sellersCount = await getApprovedSellersCount();
 
   return (
-    <div className="space-y-2">
-      <h1 className="h2-bold">Admin Overview</h1>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className='space-y-2'>
+      <h1 className='h2-bold'>Dashboard</h1>
+      <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-6'>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>Total Revenue</CardTitle>
+            <BadgeDollarSign />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {formatCurrency(Number(ordersPriceSum._sum.totalPrice || 0))}
+            <div className='text-2xl font-bold'>
+              {formatCurrency(
+                summary.totalSales._sum.totalPrice?.toString() || 0
+              )}
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sales</CardTitle>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>Sales</CardTitle>
+            <CreditCard />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{ordersCount}</div>
+            <div className='text-2xl font-bold'>
+              {formatNumber(summary.ordersCount)}
+            </div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Customers</CardTitle>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>Customers</CardTitle>
+            <Users />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{usersCount}</div>
+            <div className='text-2xl font-bold'>
+              {formatNumber(summary.usersCount)}
+            </div>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Products</CardTitle>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>Products</CardTitle>
+            <Barcode />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{productsCount}</div>
+            <div className='text-2xl font-bold'>
+              {formatNumber(summary.productsCount)}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>Active Sellers</CardTitle>
+            <Store />
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold text-blue-600'>
+              {formatNumber(sellersCount)}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <CardTitle className='text-sm font-medium'>Seller Applications</CardTitle>
+            <UserCheck />
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold text-orange-600'>
+              {formatNumber(sellerApplications.length)}
+            </div>
+            <p className='text-xs text-muted-foreground mt-1'>
+              <Link href='/admin/seller-applications' className='hover:underline'>
+                Review applications
+              </Link>
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-7'>
+        <Card className='col-span-4'>
+          <CardHeader>
+            <CardTitle>Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Charts
+              data={{
+                salesData: summary.salesData,
+              }}
+            />
+          </CardContent>
+        </Card>
+        <Card className='col-span-3'>
+          <CardHeader>
+            <CardTitle>Recent Sales</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>BUYER</TableHead>
+                  <TableHead>DATE</TableHead>
+                  <TableHead>TOTAL</TableHead>
+                  <TableHead>ACTIONS</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {summary.latestSales.map((order) => (
+                  <TableRow key={order.id}>
+                    <TableCell>
+                      {order?.user?.name ? order.user.name : 'Deleted User'}
+                    </TableCell>
+                    <TableCell>
+                      {formatDateTime(order.createdAt).dateOnly}
+                    </TableCell>
+                    <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
+                    <TableCell>
+                      <Link href={`/order/${order.id}`}>
+                        <span className='px-2'>Details</span>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default AdminOverviewPage;
